@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.22.x]
+        target-os: [linux, windows]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Create build directories
+        run: |
+          mkdir -p build/linux
+          mkdir -p build/windows
+
+      - name: Build
+        run: |
+          if [ "${{ matrix.target-os }}" == "windows" ]; then
+            GOOS=windows go build -v -o build/windows/anthropicpaperocr.exe ${workspaceFolder}/cmd/main.go
+          else
+            GOOS=linux go build -v -o build/linux/anthropicpaperocr ${workspaceFolder}/cmd/main.go
+          fi
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Save artifacts
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-${{ matrix.target-os }}-${{ matrix.go-version }}
+          path: |
+            build/${{ matrix.target-os }}/anthropicpaperocr*

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch AnthropicPaperOCR",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/main.go",
+            "args": [
+                "-document_id", "437",
+                "-api_key_paperless", "",
+                "-api_key_anthropic", "",
+                "-host_header", "",
+                "-url", ""
+            ]
+        }
+    ]
+}
