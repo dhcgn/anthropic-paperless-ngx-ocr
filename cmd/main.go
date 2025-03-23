@@ -1,6 +1,7 @@
 package main
 
 import (
+	"anthropicpaperocr/internal/anthropic"
 	"anthropicpaperocr/internal/compare"
 	"anthropicpaperocr/internal/ocr"
 	"anthropicpaperocr/internal/paperless"
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	// Progress bar
-	p, _ := pterm.DefaultProgressbar.WithTotal(4).Start()
+	p, _ := pterm.DefaultProgressbar.WithTotal(5).Start()
 
 	// Get current content of document
 	p.UpdateTitle("Getting current content of document...")
@@ -77,6 +78,14 @@ func main() {
 	}
 	p.Increment()
 
+	p.UpdateTitle("Creating titles...")
+	possibleTitles, err := anthropic.CreateTitles(ocrResult, currDoc.Title, *apiKeyAnthropic)
+	if err != nil {
+		fmt.Println("Error creating titles:", err)
+		return
+	}
+	p.Increment()
+
 	// Display diff and AI comparison
 	pterm.DefaultHeader.Printfln("Document: %s (%v) with %v chars", currDoc.Title, *documentID, len(currDoc.Content))
 	pterm.DefaultHeader.Println("Diff between original and new content")
@@ -88,8 +97,31 @@ func main() {
 
 	p.Stop()
 
+	pterm.DefaultHeader.Println("Prompt for Changes")
+
+	// Prompt user to set new title
+	pterm.DefaultHeader.Println("Set New Title")
+
+	// Add current Title to the first position of possibleTitles
+	possibleTitles = append([]string{currDoc.Title}, possibleTitles...)
+
+	// Prompt user to select a title
+	selectedTitle, err := pterm.DefaultInteractiveSelect.WithOptions(possibleTitles).Show("Select a title: ")
+	if err != nil {
+		fmt.Println("Error selecting title:", err)
+		return
+	}
+	if selectedTitle != currDoc.Title {
+		err = paperless.SetTitle(*documentID, selectedTitle, *apiKeyPaperless, *url, *hostHeader)
+		if err != nil {
+			fmt.Println("Error setting new title:", err)
+			return
+		}
+		fmt.Println("The new title has been set in the paperless instance.")
+	}
+
 	// Prompt user to set new content
-	pterm.DefaultHeader.Println("Next:")
+	pterm.DefaultHeader.Println("Set New Content")
 	decision, _ := pterm.DefaultInteractiveTextInput.WithMultiLine(false).Show("Do you want to set the new content in the paperless instance? (yes/no): ")
 
 	if decision == "yes" {

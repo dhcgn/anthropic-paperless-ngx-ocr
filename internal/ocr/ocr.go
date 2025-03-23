@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -45,11 +45,12 @@ It's OK for this section to be quite long.
 
 Once you've completed your mental  planning, provide the final transcription. The transcription should contain only the extracted content, including placeholders, with no additional commentary.
 
-Provide only the final transcription, as your result will be considered as the content of the document and nothing else.`
+Provide only the final transcription, as your result will be considered as the content of the document and nothing else.
+It is important, that only the content of the document is returned, without any introdution.`
 
 	payload := anthropictypes.Payload{
 		Model:     "claude-3-7-sonnet-latest",
-		MaxTokens: 8192,
+		MaxTokens: 64_000,
 		Messages: []anthropictypes.Message{
 			{
 				Role: "user",
@@ -77,7 +78,7 @@ Provide only the final transcription, as your result will be considered as the c
 	}
 
 	// write to to disk for debugging
-	ioutil.WriteFile("temp.json", tempJSONFile.Bytes(), 0644)
+	// ioutil.WriteFile(`C:\dev\ai-claude-paperless-ngx-pdf-visual-ocr\debugging\temp.json`, tempJSONFile.Bytes(), 0644)
 
 	req, err := http.NewRequest("POST", "https://api.anthropic.com/v1/messages", tempJSONFile)
 	if err != nil {
@@ -94,7 +95,7 @@ Provide only the final transcription, as your result will be considered as the c
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

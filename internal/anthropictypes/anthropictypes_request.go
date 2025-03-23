@@ -17,8 +17,27 @@ type Message struct {
 	Content []RequestContent `json:"content"`
 }
 
+type InputSchema struct {
+	Type       string                 `json:"type"`
+	Properties map[string]interface{} `json:"properties"`
+	Required   []string               `json:"required"`
+}
+
+type Tool struct {
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	InputSchema InputSchema `json:"input_schema"`
+}
+
 type Payload struct {
-	Model     string    `json:"model"`
-	MaxTokens int       `json:"max_tokens"`
-	Messages  []Message `json:"messages"`
+	Model      string      `json:"model"`
+	MaxTokens  int         `json:"max_tokens"`
+	Messages   []Message   `json:"messages"`
+	Tools      *[]Tool     `json:"tools,omitempty"`
+	ToolChoice *ToolChoice `json:"tool_choice,omitempty"`
+}
+
+type ToolChoice struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
 }
