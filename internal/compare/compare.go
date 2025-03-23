@@ -66,7 +66,8 @@ Important: Ensure that your entire response, including the analysis and recommen
 `, originalContent, newContent)
 
 	payload := anthropictypes.Payload{
-		Model: "claude-3-7-sonnet-latest",
+		Model:     "claude-3-7-sonnet-latest",
+		MaxTokens: 1024 * 8,
 		Messages: []anthropictypes.Message{
 			{
 				Role: "user",

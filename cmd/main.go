@@ -43,7 +43,7 @@ func main() {
 
 	// Get current content of document
 	p.UpdateTitle("Getting current content of document...")
-	currentContent, err := paperless.GetCurrentContent(*documentID, *apiKeyPaperless, *url, *hostHeader)
+	currDoc, err := paperless.GetCurrentDocument(*documentID, *apiKeyPaperless, *url, *hostHeader)
 	if err != nil {
 		fmt.Println("Error getting current content:", err)
 		return
@@ -70,7 +70,7 @@ func main() {
 
 	// Compare old and new content
 	p.UpdateTitle("Comparing content...")
-	diff, aiComparison, err := compare.CompareContent(currentContent, ocrResult, *apiKeyAnthropic)
+	diff, aiComparison, err := compare.CompareContent(currDoc.Content, ocrResult, *apiKeyAnthropic)
 	if err != nil {
 		fmt.Println("Error comparing content:", err)
 		return
@@ -78,6 +78,7 @@ func main() {
 	p.Increment()
 
 	// Display diff and AI comparison
+	pterm.DefaultHeader.Printfln("Document: %s (%v) with %v chars", currDoc.Title, *documentID, len(currDoc.Content))
 	pterm.DefaultHeader.Println("Diff between original and new content")
 	pterm.Info.Println(diff)
 	//	fmt.Println(diff)
