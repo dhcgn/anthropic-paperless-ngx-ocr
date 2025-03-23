@@ -6,7 +6,7 @@ The results are better than the default OCR with Tessaract, but the data will le
 
 ## Why Antrhopic?
 
-Because Sonnet 3.5 analyzes both the text and images to better understand the document, and this is at this moment the only API that can do this at this level of quality. It used `claude-3-5-sonnet-20241022` but will updated as soon as a new version is available.
+Because Sonnet 3.5 analyzes both the text and images to better understand the document, and this is at this moment the only API that can do this at this level of quality. It used `claude-3-7-sonnet-latest` but will updated as soon as a new version is available.
 
 ## Usage
 

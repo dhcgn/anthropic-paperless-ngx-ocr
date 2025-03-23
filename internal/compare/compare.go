@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"anthropicpaperocr/internal/anthropictypes"
@@ -66,8 +66,7 @@ Important: Ensure that your entire response, including the analysis and recommen
 `, originalContent, newContent)
 
 	payload := anthropictypes.Payload{
-		Model:     "claude-3-5-sonnet-20241022",
-		MaxTokens: 8192,
+		Model: "claude-3-7-sonnet-latest",
 		Messages: []anthropictypes.Message{
 			{
 				Role: "user",
@@ -102,7 +101,7 @@ Important: Ensure that your entire response, including the analysis and recommen
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("Error reading response body: %v", err)
 	}

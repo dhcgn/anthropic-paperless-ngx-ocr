@@ -48,7 +48,7 @@ Once you've completed your mental  planning, provide the final transcription. Th
 Provide only the final transcription, as your result will be considered as the content of the document and nothing else.`
 
 	payload := anthropictypes.Payload{
-		Model:     "claude-3-5-sonnet-20241022",
+		Model:     "claude-3-7-sonnet-latest",
 		MaxTokens: 8192,
 		Messages: []anthropictypes.Message{
 			{

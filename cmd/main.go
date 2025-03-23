@@ -7,8 +7,6 @@ import (
 	"flag"
 	"fmt"
 
-	"anthropicpaperocr/internal/download"
-
 	"github.com/pterm/pterm"
 )
 
@@ -17,7 +15,7 @@ const (
 )
 
 var (
-	Version = "0.0.1"
+	Version = "0.0.2"
 )
 
 func main() {
@@ -54,7 +52,7 @@ func main() {
 
 	p.UpdateTitle("Downloading PDF...")
 	// Download PDF file in memory
-	pdfData, err := download.PDF(*documentID, *apiKeyPaperless, *url, *hostHeader)
+	pdfData, err := paperless.DownloadPDF(*documentID, *apiKeyPaperless, *url, *hostHeader)
 	if err != nil {
 		fmt.Println("Error downloading PDF:", err)
 		return

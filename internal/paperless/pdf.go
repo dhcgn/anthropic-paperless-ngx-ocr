@@ -1,4 +1,4 @@
-package download
+package paperless
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func PDF(documentID int, apiKey, url, hostHeader string) ([]byte, error) {
+func DownloadPDF(documentID int, apiKey, url, hostHeader string) ([]byte, error) {
 	fullURL := fmt.Sprintf("%s/api/documents/%d/download/", url, documentID)
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
