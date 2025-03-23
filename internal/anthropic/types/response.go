@@ -1,4 +1,4 @@
-package anthropictypes
+package types
 
 type ResponseContent struct {
 	Type string `json:"type"`

@@ -2,8 +2,7 @@ package main
 
 import (
 	"anthropicpaperocr/internal/anthropic"
-	"anthropicpaperocr/internal/compare"
-	"anthropicpaperocr/internal/ocr"
+
 	"anthropicpaperocr/internal/paperless"
 	"flag"
 	"fmt"
@@ -62,7 +61,7 @@ func main() {
 
 	// Perform OCR
 	p.UpdateTitle("Performing OCR...")
-	ocrResult, err := ocr.PerformOCR(pdfData, *apiKeyAnthropic)
+	ocrResult, err := anthropic.PerformOCR(pdfData, *apiKeyAnthropic)
 	if err != nil {
 		fmt.Println("Error performing OCR:", err)
 		return
@@ -71,7 +70,7 @@ func main() {
 
 	// Compare old and new content
 	p.UpdateTitle("Comparing content...")
-	diff, aiComparison, err := compare.CompareContent(currDoc.Content, ocrResult, *apiKeyAnthropic)
+	diff, aiComparison, err := anthropic.CompareContent(currDoc.Content, ocrResult, *apiKeyAnthropic)
 	if err != nil {
 		fmt.Println("Error comparing content:", err)
 		return

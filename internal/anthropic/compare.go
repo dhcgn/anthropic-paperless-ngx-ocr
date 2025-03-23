@@ -1,16 +1,21 @@
-package compare
+package anthropic
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
-	"anthropicpaperocr/internal/anthropictypes"
+	"anthropicpaperocr/internal/anthropic/types"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
+
+//go:embed prompts/compare.md
+var comparePrompt string
 
 func CompareContent(originalContent, newContent, apiKeyAnthropic string) (string, string, error) {
 	// Generate diff using diffmatchpatch library
@@ -30,48 +35,17 @@ func CompareContent(originalContent, newContent, apiKeyAnthropic string) (string
 func generateAIComparison(originalContent, newContent, apiKeyAnthropic string) (string, error) {
 	url := "https://api.anthropic.com/v1/messages"
 
-	textContent := fmt.Sprintf(`
-You are tasked with comparing two transcripts of the same document and providing a recommendation on which one is better. Your analysis should be thorough yet concise, focusing on key differences that impact the overall quality of the transcripts.
+	textContent := comparePrompt
+	textContent = strings.Replace(textContent, "{{TRANSCRIPT_OLD}}", originalContent, 1)
+	textContent = strings.Replace(textContent, "{{TRANSCRIPT_NEW}}", newContent, 1)
 
-Here is the first transcript:
-<transcript_OLD>
-%s
-</transcript_OLD>
-
-Here is the second transcript:
-<transcript_NEW>
-%s
-</transcript_NEW>
-
-Please analyze both transcripts, considering the following factors:
-
-1. Accuracy: Compare the transcripts for correctness of words, phrases, and overall content.
-2. Completeness: Assess which transcript captures more of the original document's content.
-3. Clarity and coherence: Evaluate the readability and flow of each transcript.
-4. Any additional factors that you find relevant to determining the quality of the transcripts.
-
-Based on your analysis, provide a recommendation on which transcript is better. Your recommendation should be well-founded and supported by specific examples from the transcripts.
-
-Present your findings and recommendation in the following format:
-
-<analysis>
-[Your detailed analysis of the transcripts, comparing them based on the factors mentioned above. Include specific examples to support your points.]
-</analysis>
-
-<recommendation>
-[Your concise recommendation of which transcript is better, along with a brief justification.]
-</recommendation>
-
-Important: Ensure that your entire response, including the analysis and recommendation, is in the same language as the transcripts provided.
-`, originalContent, newContent)
-
-	payload := anthropictypes.Payload{
+	payload := types.Payload{
 		Model:     "claude-3-7-sonnet-latest",
 		MaxTokens: 1024 * 8,
-		Messages: []anthropictypes.Message{
+		Messages: []types.Message{
 			{
 				Role: "user",
-				Content: []anthropictypes.RequestContent{
+				Content: []types.RequestContent{
 					{
 						Type: "text",
 						Text: textContent,
@@ -111,7 +85,7 @@ Important: Ensure that your entire response, including the analysis and recommen
 		return "", fmt.Errorf("Failed to perform comparison, status code: %d, response body: %s", resp.StatusCode, string(body))
 	}
 
-	var response anthropictypes.Response
+	var response types.Response
 
 	if err := json.Unmarshal(body, &response); err != nil {
 		return "", fmt.Errorf("Error unmarshaling response: %v", err)

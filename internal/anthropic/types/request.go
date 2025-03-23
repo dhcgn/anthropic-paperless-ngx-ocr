@@ -1,4 +1,4 @@
-package anthropictypes
+package types
 
 type Source struct {
 	Type      string `json:"type"`
