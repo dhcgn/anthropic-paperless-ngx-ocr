@@ -39,15 +39,22 @@ You can download the binary from the [releases page](https://github.com/dhcgn/an
 
 ```mermaid
 graph TD
-    A[Start] --> B[Get current content of document]
+    A[Start] --> B[Get current document content]
     B --> C[Download PDF file]
-    C --> D[Make OCR with Claude AI]
-    D --> E[Compare old and new content]
-    E --> F[Compare with AI]
-    F --> G[Display diff and AI comparison]
-    G --> H{Set new content?}
-    H -->|Yes| I[Set Content in Paperless]
-    H -->|No| J[End without setting content]
-    I --> K[End]
-    J --> K
+    C --> D[Perform OCR with Claude AI]
+    D --> E[Compare old and new content & generate AI comparison]
+    E --> F[Create new titles using AI]
+    F --> G[Display diff, AI comparison & title options]
+    G --> H[Select new title]
+    H --> I{New title different?}
+    I -- Yes --> J[Set new title in Paperless]
+    I -- No --> K[Keep current title]
+    J --> L[Prompt to set new content]
+    K --> L
+    L --> M{Set new content?}
+    M -- Yes --> N[Set content in Paperless]
+    M -- No --> O[Leave content unchanged]
+    N --> P[End]
+    O --> P
+
 ```
